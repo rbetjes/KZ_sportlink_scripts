@@ -8,11 +8,12 @@
         fetch('https://data.sportlink.com/programma?client_id=xxx&spelsoort=za&teamcode=' + kz_team)
             .then(res => res.json()
                 .then(programmasarray => {
-                    programma_div.innerHTML=`<table><tbody>`
+                    programmaHTML=`<table class="kzProgramma"><tbody>`
                     for (programma of programmasarray) {
-                        programma_div.innerHTML += `<tr><td>${programma.thuisteam}</td><td>${programma.uitteam}</td><td>${programma.wedstrijddatum}</td></tr>`;
+                        programmaHTML += `<tr><td>${programma.thuisteam}</td><td>${programma.uitteam}</td><td>${programma.wedstrijddatum}</td></tr>`;
                     }
-                    programma_div.innerHTML+=`</tbody></table>`
+                    programmaHTML+=`</tbody></table>`
+                    programma_div.innerHTML = programmaHTML;
                 })
             );
     }, 100);
