@@ -1,0 +1,27 @@
+<script> 
+    paramsString = window.location.search;
+    searchParams = new URLSearchParams(paramsString);
+    kz_team=searchParams.get('kz_team') || 28372;
+    
+    setTimeout(function() {
+        const teams_div = document.querySelector('[id="teams_buttons_za"');
+        fetch('https://data.sportlink.com/teams?client_id=xxx&spelsoort=za')
+            .then(res => res.json()
+                .then(teamsarray => {
+                    for (team of teamsarray) {
+                        teams_div.innerHTML += `<button class="kzTeamButton" type="button" onclick="reload(${team.teamcode})">${team.teamnaam}</button>`;
+//                             if (team.teamnaam === 'KZ/Keukensale.com 1' && !kz_team) {
+//                                 
+//                             }
+                    }
+                })
+            );
+    }, 100);
+
+    
+    function reload(teamcode) {
+        window.location=window.location.href.split('?')[0] + '?kz_team=' + teamcode;
+    } 
+</script>
+
+<div id="teams_buttons_za"></div>
