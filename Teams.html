@@ -59,6 +59,7 @@
 }
 </style>
 
+<div style="background:#DDD; height:200px;">
 <div class="kzrowcontainer">
     <div id="teams_buttons_za" class="kzbox"></div>
     <div class="kzcolcontainer">
@@ -71,7 +72,7 @@
         <div id="team_uitslagen" class="kzbox" />
     </div>
 </div>
-
+</div>
 <script>
 
          // For sorting in natural order
@@ -81,6 +82,14 @@
 
         reload = (teamcode) => {
             window.location=window.location.href.split('?')[0] + '?kz_teamcode=' + teamcode;
+        }
+
+        resize_parent = (element) => {
+            if (element.style.getPropertyValue('height')) {
+                element.style.removeProperty('height');
+            } else {
+                resize_parent(element.parentElement);
+            }
         }
 
         paramsString = window.location.search;
@@ -105,6 +114,7 @@
                         constructTeamIndelingNietspelers();
                         constructUitslagen();
                         constructPoulestanden();
+                        resize_parent(document.getElementById('teams_buttons_za'));
                     })
                 );
         }
