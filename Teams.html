@@ -96,8 +96,8 @@
                         teamsarray.sort((a, b) => naturalOrder(a.teamnaam, b.teamnaam));
                         for (team of teamsarray) {
                             teams_div.innerHTML += `<button class="kzTeamButton" type="button" onclick="reload(${team.teamcode})">${team.teamnaam.substring(18)}</button>`;
-                            if (team.teamcode === kz_teamcode) {
-                                kz_team = team;
+                            if (team.teamcode == kz_teamcode) {
+                                window.kz_team = team;
                             }
                         }
                         constructProgramma();
@@ -116,7 +116,7 @@
             fetch(`https://data.sportlink.com/programma?client_id=3ORggLNhOq&spelsoort=za&aantaldagen=200&teamcode=${kz_teamcode}`)
                 .then(res => res.json()
                     .then(programmasarray => {
-                        programmaHTML=`<table class="kztabel"><thead><td colspan="2">Datum</td><td/><td>Wedstrijd</td><td/><tbody>`
+                        programmaHTML=`<table class="kztabel"><thead><th colspan="2">Datum</th><th/><th>Wedstrijd</th><th/></thead><tbody>`
                         for (programma of programmasarray) {
                             programmaHTML += `
                             <tr>
@@ -141,7 +141,7 @@
             fetch(`https://data.sportlink.com/team-indeling?client_id=3ORggLNhOq&lokaleteamcode=-1&teampersoonrol=SPELER&teamcode=${kz_teamcode}`)
                 .then(res => res.json()
                     .then(indeling_spelerssarray => {
-                        indeling_spelersHTML=`<table class="kztabel"><thead><td>Naam</td></thead><tbody>`
+                        indeling_spelersHTML=`<table class="kztabel"><thead><th>Naam</th></thead><tbody>`
                         for (indeling_spelers of indeling_spelerssarray) {
                             indeling_spelersHTML += `<tr><td>${indeling_spelers.naam}</td></tr>`;
                         }
@@ -158,7 +158,7 @@
             fetch(`https://data.sportlink.com/team-indeling?client_id=3ORggLNhOq&lokaleteamcode=-1&teampersoonrol=NIET-SPELER&teamcode=${kz_teamcode}`)
                 .then(res => res.json()
                     .then(indeling_nietspelerssarray => {
-                        indeling_nietspelersHTML=`<table class="kztabel"><thead><td>Naam</td></thead><tbody>`
+                        indeling_nietspelersHTML=`<table class="kztabel"><thead><th>Naam</th></thead><tbody>`
                         for (indeling_nietspelers of indeling_nietspelerssarray) {
                             indeling_nietspelersHTML += `<tr><td>${indeling_nietspelers.naam}</td></tr>`;
                         }
@@ -172,7 +172,6 @@
         // Uitslagen
         constructUitslagen = () => {
             const uitslagen_div = document.querySelector('[id="team_uitslagen"');
-            //fetch('https://data.sportlink.com/uitslagen?client_id=3ORggLNhOq&lokaleteamcode=-1&thuis=ja&uit=ja&teamcode=' + kz_teamcode)
             fetch(`https://data.sportlink.com/uitslagen?client_id=3ORggLNhOq&lokaleteamcode=-1&thuis=ja&uit=ja&weekoffset=-14&aantaldagen=365&teamcode=${kz_teamcode}`)
                 .then(res => res.json()
                     .then(uitslagensarray => {
@@ -198,21 +197,23 @@
         // Poulestanden
         constructPoulestanden = () => {
             const poulestand_div = document.querySelector('[id="team_poulestand"');
-            //fetch('https://data.sportlink.com/poulestand?client_id=3ORggLNhOq&lokaleteamcode=-1&thuis=ja&uit=ja&teamcode=' + kz_teamcode)
-            fetch(`https://data.sportlink.com/poulestand?client_id=3ORggLNhOq&poulecode=-1&teamcode=${kz_teamcode}`)
+            fetch(`https://data.sportlink.com/poulestand?client_id=3ORggLNhOq&poulecode=${window.kz_team.poule}`)
                 .then(res => res.json()
                     .then(poulestandsarray => {
-                        poulestandHTML=`<table class="kztabel"><thead><td>Positie</td><td>Team</td><td>GS</td><td>GW</td><td>GL</td><td>VL</td><td>V</td><td>T</td><td>Doelsaldo</td><td>PT</td></thead><tbody>`
+                        poulestandHTML=`<table class="kztabel"><thead><th>Positie</th><th>Team</th><th>GS</th><th>GW</th><th>GL</th><th>VL</th><th>V</th><th>T</th><th>Doelsaldo</th><th>PT</th></thead><tbody>`
                         for (poulestand of poulestandsarray) {
-                            poulestandHTML += `
-                            <tr>
-                <td>${poulestand.datumopgemaakt}</td>
-                <td><img src= "${poulestand.thuisteamlogo}"width="30" height="30"></td>
-                <td>${poulestand.wedstrijd}</td>
-                <td><img src= "${poulestand.thuisteamlogo}"width="30" height="30"></td>
-                <td>${poulestand.uitslag}</td>
-                </tr>
-            `;
+                            poulestandHTML += `<tr>
+                    <td>${poulestand.positie}</td>
+                    <td><img src= "${poulestand.clublogo}"width="30" height="30"></td>
+                    <td>${poulestand.gespeeldewedstrijden}</td>
+                    <td>${poulestand.gewonnen}</td>
+                    <td>${poulestand.gelijk}</td>
+                    <td>${poulestand.verloren}</td>
+                    <td>${poulestand.doelpuntenvoor}</td>
+                    <td>${poulestand.doelpuntentegen}</td>
+                    <td>${poulestand.doelsaldo}</td>
+                    <td>${poulestand.punten}</td>
+                </tr>`;
                         }
                         poulestandHTML+=`</tbody></table>`;
                     poulestand_div.innerHTML = poulestandHTML;
