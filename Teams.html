@@ -197,7 +197,7 @@
         // Poulestanden
         constructPoulestanden = () => {
             const poulestand_div = document.querySelector('[id="team_poulestand"');
-            fetch(`https://data.sportlink.com/poulestand?client_id=3ORggLNhOq&poulecode=${window.kz_team.poule}`)
+            fetch(`https://data.sportlink.com/poulestand?client_id=3ORggLNhOq&poulecode=${window.kz_team.poulecode}`)
                 .then(res => res.json()
                     .then(poulestandsarray => {
                         poulestandHTML=`<table class="kztabel"><thead><th>Positie</th><th>Team</th><th>GS</th><th>GW</th><th>GL</th><th>VL</th><th>V</th><th>T</th><th>Doelsaldo</th><th>PT</th></thead><tbody>`
