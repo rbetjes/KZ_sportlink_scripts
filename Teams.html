@@ -1,8 +1,8 @@
-<style>
+<style type="text/css">
 .kzTeamButton {
     border-top: 7px solid #EDBD05;
     border-right: 7px solid #EDBD05;
-    border-bottom: 7px solid #EDBD05; 
+    border-bottom: 7px solid #EDBD05;
     border-left: 7px solid #EDBD05;
     border-radius: 12px 12px 12px 12px;
     background: #084D90;
@@ -12,186 +12,213 @@
     width:150px;
     font-size: 20px;
 }
-    .kztabel table {
-        border-collapse: collapse;
-        text-align: left;
-        font-weight: bold;
-        font-family: arial;
-        font-size: 12px;
-        color: #444444;
-    }
-    .kztabel th {
-        background-color: #cccccc;
-        border: 1px solid #444444;
-        padding-top: 0px;
-        padding-right: 2px;
-        padding-bottom: 0px;
-        padding-left: 2px;
-    }
-    .kztabel td {
-        border: 1px solid #444444;
-        padding-top: 0px;
-        padding-right: 2px;
-        padding-bottom: 0px;
-        padding-left: 2px;
-    }
-    .kztabel td:nth-child(1) {
-        text-align: right;
-    }
-	.kztabel img (
-	    width=30px;
-	}
+.kztabel table {
+    border-collapse: collapse;
+    text-align: left;
+    font-weight: bold;
+    font-family: arial;
+    font-size: 12px;
+    color: #444444;
+}
+.kztabel th {
+    background-color: #cccccc;
+    border: 1px solid #444444;
+    padding-top: 0px;
+    padding-right: 2px;
+    padding-bottom: 0px;
+    padding-left: 2px;
+}
+.kztabel td {
+    border: 1px solid #444444;
+    padding-top: 0px;
+    padding-right: 2px;
+    padding-bottom: 0px;
+    padding-left: 2px;
+}
+.kztabel td:nth-child(1) {
+    text-align: right;
+}
+.kztabel td:nth-child(4) {
+    text-align: center;
+}
+.kztabel img {
+    width: 30px;
+}
+.kzrowcontainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+.kzcolcontainer {
+    display: flex;
+    flex-direction: row;
+    gap: 1.25rem;
+    justify-content: space-evenly;
+}
+.kzbox {
+}
 </style>
 
- <script> 
- 
- // For sorting in natural order
-const naturalOrder = new Intl.Collator(undefined, {
-	numeric: true
-}).compare;   
+<div class="kzrowcontainer">
+    <div id="teams_buttons_za" class="kzbox"></div>
+    <div class="kzcolcontainer">
+        <div id="team_programma" class="kzbox"></div>
+        <div id="team_indeling_spelers" class="kzbox"></div>
+        <div id="team_indeling_nietspelers" class="kzbox"></div>
+    </div>
+    <div class="kzcolcontainer">
+        <div id="team_poulestand" class="kzbox" />
+        <div id="team_uitslagen" class="kzbox" />
+    </div>
+</div>
 
-		paramsString = window.location.search;
-		searchParams = new URLSearchParams(paramsString);
-		kz_team=searchParams.get('kz_team') || 28372;
-		
-		setTimeout(function() {
-			const teams_div = document.querySelector('[id="teams_buttons_za"');
-			fetch('https://data.sportlink.com/teams?client_id=3ORggLNhOq&spelsoort=za')
-				.then(res => res.json()
-         	.then(teamsarray => {  
-            teamsarray.sort((a, b) => naturalOrder(a.teamnaam, b.teamnaam));
-						for (team of teamsarray) {
-							teams_div.innerHTML += `<button class="kzTeamButton" type="button" onclick="reload(${team.teamcode})">${team.teamnaam.substring(18)}</button>`;
-// 							if (team.teamnaam === 'KZ/Keukensale.com 1' && !kz_team) {
-// 								
-// 							}
-						}
-					})
-				);
-		}, 100);
-	
-		
-		function reload(teamcode) {
-			window.location=window.location.href.split('?')[0] + '?kz_team=' + teamcode;
-		} 
-	</script>
-	<div id="teams_buttons_za"></div>
-<script> 
-		paramsString = window.location.search;
-		searchParams = new URLSearchParams(paramsString);
-		kz_team=searchParams.get('kz_team') || 28372;
-		
-		setTimeout(function() {
-			const programma_div = document.querySelector('[id="team_programma"');
-			fetch('https://data.sportlink.com/programma?client_id=3ORggLNhOq&spelsoort=za&aantaldagen=200&teamcode=' + kz_team)
-				.then(res => res.json()
-					.then(programmasarray => {
-						programmaHTML=`<table class="kztabel">
-		<tbody>`
-						for (programma of programmasarray) {
-							programmaHTML += `
+<script>
+
+         // For sorting in natural order
+        const naturalOrder = new Intl.Collator(undefined, {
+            numeric: true
+        }).compare;
+
+        reload = (teamcode) => {
+            window.location=window.location.href.split('?')[0] + '?kz_teamcode=' + teamcode;
+        }
+
+        paramsString = window.location.search;
+        searchParams = new URLSearchParams(paramsString);
+        kz_teamcode=searchParams.get('kz_teamcode') || 28372;
+
+        // Buttons
+        constructButtons = () => {
+            const teams_div = document.querySelector('[id="teams_buttons_za"');
+            fetch('https://data.sportlink.com/teams?client_id=3ORggLNhOq&spelsoort=za')
+                .then(res => res.json()
+                    .then(teamsarray => {
+                        teamsarray.sort((a, b) => naturalOrder(a.teamnaam, b.teamnaam));
+                        for (team of teamsarray) {
+                            teams_div.innerHTML += `<button class="kzTeamButton" type="button" onclick="reload(${team.teamcode})">${team.teamnaam.substring(18)}</button>`;
+                            if (team.teamcode === kz_teamcode) {
+                                kz_team = team;
+                            }
+                        }
+                        constructProgramma();
+                        constructTeamIndeling();
+                        constructTeamIndelingNietspelers();
+                        constructUitslagen();
+                        constructPoulestanden();
+                    })
+                );
+        }
+
+
+        // Programma
+        constructProgramma = () => {
+            const programma_div = document.querySelector('[id="team_programma"');
+            fetch(`https://data.sportlink.com/programma?client_id=3ORggLNhOq&spelsoort=za&aantaldagen=200&teamcode=${kz_teamcode}`)
+                .then(res => res.json()
+                    .then(programmasarray => {
+                        programmaHTML=`<table class="kztabel"><thead><td colspan="2">Datum</td><td/><td>Wedstrijd</td><td/><tbody>`
+                        for (programma of programmasarray) {
+                            programmaHTML += `
                             <tr>
-				<td>${programma.datum}</td>
+                <td>${programma.datum}</td>
                 <td>${programma.aanvangstijd}</td>
                 <td><img src= "${programma.thuisteamlogo}"width="30" height="30"></td>
                 <td>${programma.thuisteam+" -  "+programma.uitteam}</td>
                 <td><img src= "${programma.uitteamlogo}"width="30" height="30"></td>
-				</tr>
+                </tr>
             `;
-						}
-						programmaHTML+=`</tbody>
-	</table>`;
+                        }
+                        programmaHTML+=`</tbody></table>`;
                     programma_div.innerHTML = programmaHTML;
-					})
-				);
-		}, 100);
-	</script>
-	<div  id="team_programma" style="float:left"/>
-<script> 
-		paramsString = window.location.search;
-		searchParams = new URLSearchParams(paramsString);
-		kz_team=searchParams.get('kz_team') || 28372;
-		
-		setTimeout(function() {
-			const indeling_spelers_div = document.querySelector('[id="team_indeling_spelers"');
-			fetch('https://data.sportlink.com/team-indeling?client_id=3ORggLNhOq&lokaleteamcode=-1&teampersoonrol=SPELER&teamcode=' + kz_team)
-				.then(res => res.json()
-					.then(indeling_spelerssarray => {
-						indeling_spelersHTML=`<table class="kzProgramma">
-		<tbody>`
-						for (indeling_spelers of indeling_spelerssarray) {
-							indeling_spelersHTML += `
-                            <tr>
-				<td>${indeling_spelers.naam}</td>
-				</tr>
-            `;
-						}
-						indeling_spelersHTML+=`</tbody>
-	</table>`;
+                    })
+                );
+        }
+
+
+        // Team indeling
+        constructTeamIndeling = () => {
+            const indeling_spelers_div = document.querySelector('[id="team_indeling_spelers"');
+            fetch(`https://data.sportlink.com/team-indeling?client_id=3ORggLNhOq&lokaleteamcode=-1&teampersoonrol=SPELER&teamcode=${kz_teamcode}`)
+                .then(res => res.json()
+                    .then(indeling_spelerssarray => {
+                        indeling_spelersHTML=`<table class="kztabel"><thead><td>Naam</td></thead><tbody>`
+                        for (indeling_spelers of indeling_spelerssarray) {
+                            indeling_spelersHTML += `<tr><td>${indeling_spelers.naam}</td></tr>`;
+                        }
+                        indeling_spelersHTML+=`</tbody></table>`;
                     indeling_spelers_div.innerHTML = indeling_spelersHTML;
-					})
-				);
-		}, 100);
-	</script>
-	<div id="team_indeling_spelers" style="float:left"/>
-<script> 
-		paramsString = window.location.search;
-		searchParams = new URLSearchParams(paramsString);
-		kz_team=searchParams.get('kz_team') || 28372;
-		
-		setTimeout(function() {
-			const indeling_nietspelers_div = document.querySelector('[id="team_indeling_nietspelers"');
-			fetch('https://data.sportlink.com/team-indeling?client_id=3ORggLNhOq&lokaleteamcode=-1&teampersoonrol=NIET-SPELER&teamcode=' + kz_team)
-				.then(res => res.json()
-					.then(indeling_nietspelerssarray => {
-						indeling_nietspelersHTML=`<table class="kzProgramma">
-		<tbody>`
-						for (indeling_nietspelers of indeling_nietspelerssarray) {
-							indeling_nietspelersHTML += `
-                            <tr>
-				<td>${indeling_nietspelers.naam}</td>
-				</tr>
-            `;
-						}
-						indeling_nietspelersHTML+=`</tbody>
-	</table>`;
+                    })
+                );
+
+        }
+
+        // Staf
+        constructTeamIndelingNietspelers = () => {
+            const indeling_nietspelers_div = document.querySelector('[id="team_indeling_nietspelers"');
+            fetch(`https://data.sportlink.com/team-indeling?client_id=3ORggLNhOq&lokaleteamcode=-1&teampersoonrol=NIET-SPELER&teamcode=${kz_teamcode}`)
+                .then(res => res.json()
+                    .then(indeling_nietspelerssarray => {
+                        indeling_nietspelersHTML=`<table class="kztabel"><thead><td>Naam</td></thead><tbody>`
+                        for (indeling_nietspelers of indeling_nietspelerssarray) {
+                            indeling_nietspelersHTML += `<tr><td>${indeling_nietspelers.naam}</td></tr>`;
+                        }
+                        indeling_nietspelersHTML+=`</tbody></table>`;
                     indeling_nietspelers_div.innerHTML = indeling_nietspelersHTML;
-					})
-				);
-		}, 100);
-	</script>
-<div id="team_indeling_nietspelers"/>
+                    })
+                );
+        }
 
 
-<script> 
-		paramsString = window.location.search;
-		searchParams = new URLSearchParams(paramsString);
-		kz_team=searchParams.get('kz_team') || 28372;
-		
-		setTimeout(function() {
-			const uitslagen_div = document.querySelector('[id="team_uitslagen"');
-			//fetch('https://data.sportlink.com/uitslagen?client_id=3ORggLNhOq&lokaleteamcode=-1&thuis=ja&uit=ja&teamcode=' + kz_team)
-			fetch('https://data.sportlink.com/uitslagen?client_id=3ORggLNhOq&lokaleteamcode=-1&thuis=ja&uit=ja&weekoffset=-14&aantaldagen=365&teamcode=12935')
-				.then(res => res.json()
-					.then(uitslagensarray => {
-						uitslagenHTML=`<table class="kzProgramma">
-		<tbody>`
-						for (uitslagen of uitslagensarray) {
-							uitslagenHTML += `
+        // Uitslagen
+        constructUitslagen = () => {
+            const uitslagen_div = document.querySelector('[id="team_uitslagen"');
+            //fetch('https://data.sportlink.com/uitslagen?client_id=3ORggLNhOq&lokaleteamcode=-1&thuis=ja&uit=ja&teamcode=' + kz_teamcode)
+            fetch(`https://data.sportlink.com/uitslagen?client_id=3ORggLNhOq&lokaleteamcode=-1&thuis=ja&uit=ja&weekoffset=-14&aantaldagen=365&teamcode=${kz_teamcode}`)
+                .then(res => res.json()
+                    .then(uitslagensarray => {
+                        uitslagenHTML=`<table class="kztabel"><tbody>`
+                        for (uitslagen of uitslagensarray) {
+                            uitslagenHTML += `
                             <tr>
-				<td>${uitslagen.datumopgemaakt}</td>
-				<td><img src= "${uitslagen.thuisteamlogo}"width="30" height="30"></td>
-				<td>${uitslagen.wedstrijd}</td>
-				<td><img src= "${uitslagen.thuisteamlogo}"width="30" height="30"></td>
-				<td>${uitslagen.uitslag}</td>
-				</tr>
+                <td>${uitslagen.datumopgemaakt}</td>
+                <td><img src= "${uitslagen.thuisteamlogo}"width="30" height="30"></td>
+                <td>${uitslagen.wedstrijd}</td>
+                <td><img src= "${uitslagen.thuisteamlogo}"width="30" height="30"></td>
+                <td>${uitslagen.uitslag}</td>
+                </tr>
             `;
-						}
-						uitslagenHTML+=`</tbody>
-	</table>`;
+                        }
+                        uitslagenHTML+=`</tbody></table>`;
                     uitslagen_div.innerHTML = uitslagenHTML;
-					})
-				);
-		}, 100);
-	</script>
-<div id="team_uitslagen"/>
+                    })
+                );
+        }
+
+
+        // Poulestanden
+        constructPoulestanden = () => {
+            const poulestand_div = document.querySelector('[id="team_poulestand"');
+            //fetch('https://data.sportlink.com/poulestand?client_id=3ORggLNhOq&lokaleteamcode=-1&thuis=ja&uit=ja&teamcode=' + kz_teamcode)
+            fetch(`https://data.sportlink.com/poulestand?client_id=3ORggLNhOq&poulecode=-1&teamcode=${kz_teamcode}`)
+                .then(res => res.json()
+                    .then(poulestandsarray => {
+                        poulestandHTML=`<table class="kztabel"><thead><td>Positie</td><td>Team</td><td>GS</td><td>GW</td><td>GL</td><td>VL</td><td>V</td><td>T</td><td>Doelsaldo</td><td>PT</td></thead><tbody>`
+                        for (poulestand of poulestandsarray) {
+                            poulestandHTML += `
+                            <tr>
+                <td>${poulestand.datumopgemaakt}</td>
+                <td><img src= "${poulestand.thuisteamlogo}"width="30" height="30"></td>
+                <td>${poulestand.wedstrijd}</td>
+                <td><img src= "${poulestand.thuisteamlogo}"width="30" height="30"></td>
+                <td>${poulestand.uitslag}</td>
+                </tr>
+            `;
+                        }
+                        poulestandHTML+=`</tbody></table>`;
+                    poulestand_div.innerHTML = poulestandHTML;
+                    })
+                );
+        }
+
+        setTimeout(constructButtons(), 10);
+    </script>
