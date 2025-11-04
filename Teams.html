@@ -83,6 +83,9 @@
         }
 
         resize_parent = (element) => {
+            if (!element) {
+                return;
+            }
             if (element.style.getPropertyValue('height')) {
                 element.style.removeProperty('height');
             } else {
@@ -112,7 +115,6 @@
                         constructTeamIndelingNietspelers();
                         constructUitslagen();
                         constructPoulestanden();
-                        resize_parent(document.getElementById('teams_buttons_za'));
                     })
                 );
         }
@@ -137,7 +139,8 @@
             `;
                         }
                         programmaHTML+=`</tbody></table>`;
-                    programma_div.innerHTML = programmaHTML;
+                        programma_div.innerHTML = programmaHTML;
+                        resize_parent(document.getElementById('teams_buttons_za'));
                     })
                 );
         }
@@ -154,7 +157,8 @@
                             indeling_spelersHTML += `<tr><td>${indeling_spelers.naam}</td></tr>`;
                         }
                         indeling_spelersHTML+=`</tbody></table>`;
-                    indeling_spelers_div.innerHTML = indeling_spelersHTML;
+                        indeling_spelers_div.innerHTML = indeling_spelersHTML;
+                        resize_parent(document.getElementById('teams_buttons_za'));
                     })
                 );
 
@@ -171,7 +175,8 @@
                             indeling_nietspelersHTML += `<tr><td>${indeling_nietspelers.naam}</td></tr>`;
                         }
                         indeling_nietspelersHTML+=`</tbody></table>`;
-                    indeling_nietspelers_div.innerHTML = indeling_nietspelersHTML;
+                        indeling_nietspelers_div.innerHTML = indeling_nietspelersHTML;
+                        resize_parent(document.getElementById('teams_buttons_za'));
                     })
                 );
         }
@@ -196,7 +201,8 @@
             `;
                         }
                         uitslagenHTML+=`</tbody></table>`;
-                    uitslagen_div.innerHTML = uitslagenHTML;
+                        uitslagen_div.innerHTML = uitslagenHTML;
+                        resize_parent(document.getElementById('teams_buttons_za'));
                     })
                 );
         }
@@ -224,7 +230,8 @@
                 </tr>`;
                         }
                         poulestandHTML+=`</tbody></table>`;
-                    poulestand_div.innerHTML = poulestandHTML;
+                        poulestand_div.innerHTML = poulestandHTML;
+                        resize_parent(document.getElementById('teams_buttons_za'));
                     })
                 );
         }
