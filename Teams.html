@@ -50,7 +50,7 @@
     gap: 1.25rem;
 }
 .kzcolcontainer {
-    display: flex;
+    display: flex;    
     flex-direction: row;
     gap: 1.25rem;
     justify-content: space-evenly;
@@ -59,12 +59,21 @@
 }
 </style>
 
-<div class="kzrowcontainer">
+<div class="kzrowcontainer" style="display: flex;">
     <div id="teams_buttons_za" class="kzbox"></div>
     <div class="kzcolcontainer">
-        <div id="team_programma" class="kzbox"></div>
-        <div id="team_indeling_spelers" class="kzbox"></div>
-        <div id="team_indeling_nietspelers" class="kzbox"></div>
+        <div class="kzrowcontainer">
+            <div class="kztitle">Programma</div>
+            <div id="team_programma" class="kzbox"></div>
+        </div>
+        <div class="kzrowcontainer">
+            <div class="kztitle">Team indeling</div>
+            <div id="team_indeling_spelers" class="kzbox"></div>
+        </div>
+        <div class="kzrowcontainer">
+            <div class="kztitle">Staf</div>
+            <div id="team_indeling_nietspelers" class="kzbox"></div>
+        </div>
     </div>
     <div class="kzcolcontainer">
         <div id="team_poulestand" class="kzbox" />
