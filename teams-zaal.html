@@ -1,0 +1,295 @@
+<style type="text/css">
+.kzTeamButton {
+    border: 3px solid #EDBD05;
+    border-radius: 6px;
+    background: #084D90;
+    color: #EDBD05;
+    display:inline-block;
+    padding:0px;
+    width:110px;
+    font-size: 20px;
+	margin: 1px;
+}
+.kztabel table {
+    border-collapse: collapse;
+    text-align: left;
+    font-weight: bold;
+    font-family: arial;
+    font-size: 12px;
+    color: #444444;
+}
+.kztabel th {
+    background-color: #cccccc;
+    border: 1px solid #444444;
+    padding-top: 0px;
+    padding-right: 2px;
+    padding-bottom: 0px;
+    padding-left: 2px;
+}
+.kztabel td {
+    border: 1px solid #444444;
+    padding-top: 0px;
+    padding-right: 2px;
+    padding-bottom: 0px;
+    padding-left: 2px;
+}
+.kztabel td:nth-child(1) {
+    text-align: right;
+}
+.kztabel td:nth-child(4) {
+    text-align: center;
+}
+.kztabel img {
+    width: 30px;
+}
+.kzrowcontainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+.kzcolcontainer {
+    display: flex;    
+    flex-direction: row;
+    gap: 1.25rem;
+    justify-content: space-evenly;
+}
+.kzbox {
+}
+.kztitle{
+    background: #084D90;
+	text-align: left;
+    font-weight: bold;
+    font-family: arial;
+    font-size: 30px;
+    color: white;
+   height: 50px;
+   display: flex; justify-content: center; align-items: center;
+}
+</style>
+
+<div class="kzrowcontainer" style="display: flex;">
+    <div id="teams_buttons_za" class="kzbox"></div>
+    <div class="kzcolcontainer">
+        <div class="kzrowcontainer">
+            <div class="kztitle">Programma</div>
+            <div id="team_programma" class="kzbox"></div>
+        </div>
+        <div class="kzrowcontainer">
+            <div class="kztitle">Team</div>
+            <div id="team_indeling_spelers" class="kzbox"></div>
+        </div>
+        <div class="kzrowcontainer">
+            <div class="kztitle">Staf</div>
+            <div id="team_indeling_nietspelers" class="kzbox"></div>
+        </div>
+	 </div>
+	 <div class="kzcolcontainer">
+		<div class="kzrowcontainer">
+            <div class="kztitle">Te fluiten wedstrijden</div>
+            <div id="team_fluiten" class="kzbox"></div>
+        </div>
+	</div>
+    <div class="kzcolcontainer">
+        <div class="kzrowcontainer">	
+	        <div class="kztitle">Poulestand</div>
+            <div id="team_poulestand" class="kzbox" />
+	    </div>
+		<div class="kzrowcontainer">
+		    <div class="kztitle">Uitslagen</div>
+            <div id="team_fluiten" class="kzbox" />
+        </div>			
+    </div>
+</div>
+<script id="kzscript" type="text/javascript">
+
+         // For sorting in natural order
+        const naturalOrder = new Intl.Collator(undefined, {
+            numeric: true
+        }).compare;
+
+        reload = (teamcode) => {
+            window.location=window.location.href.split('?')[0] + '?kz_teamcode=' + teamcode;
+        }
+
+        resize_parent = (element) => {
+            if (!element) {
+                return;
+            }
+            if (element.style.getPropertyValue('height')) {
+                element.style.removeProperty('height');
+            } else {
+                resize_parent(element.parentElement);
+            }
+        }
+
+        paramsString = window.location.search;
+        searchParams = new URLSearchParams(paramsString);
+        kz_teamcode=searchParams.get('kz_teamcode') || 28372;
+
+        // Buttons
+        constructButtons = () => {
+            const teams_div = document.querySelector('[id="teams_buttons_za"');
+            fetch('https://data.sportlink.com/teams?client_id=3ORggLNhOq&spelsoort=za')
+                .then(res => res.json()
+                    .then(teamsarray => {
+                        teamsarray.sort((a, b) => naturalOrder(a.teamnaam, b.teamnaam));
+                        for (team of teamsarray) {
+                            teams_div.innerHTML += `<button class="kzTeamButton" type="button" onclick="reload(${team.teamcode})">${team.teamnaam.substring(18)}</button>`;
+                            if (team.teamcode == kz_teamcode) {
+                                window.kz_team = team;
+                            }
+                        }
+                        constructProgramma();
+                        constructTeamIndeling();
+                        constructTeamIndelingNietspelers();
+                        constructUitslagen();
+                        constructPoulestanden();
+                    })
+                );
+        }
+
+		
+		        // fluiten
+        constructFluiten = () => {
+            const fluiten_div = document.querySelector('[id="team_fluiten"');
+            fetch(`https://data.sportlink.com/programma?client_id=3ORggLNhOq&spelsoort=za&aantaldagen=201&teamcode=${kz_teamcode}`)
+                .then(res => res.json()
+                    .then(fluitensarray => {
+                        fluitenHTML=`<table class="kztabel"><thead><th colspan="2">Datum</th><th/><th>Wedstrijd</th><th/><th>Wedstrijd</th><th/><th>Scheidsrechter</th><th>Team</th></thead><tbody>`
+                        for (fluiten of fluitensarray) {
+                            fluitenHTML += `
+                            <tr>
+                <td>${fluiten.datum}</td>
+                <td>${fluiten.aanvangstijd}</td>
+                <td><img src= "${fluiten.thuisteamlogo}"width="30" height="30"></td>
+                <td>${fluiten.thuisteam+" -  "+fluiten.uitteam}</td>
+                <td><img src= "${fluiten.uitteamlogo}"width="30" height="30"></td>
+				<td>${fluiten.scheidsrechter}</td>
+				<td>${fluiten.kleedkamerscheidsrechter}</td>
+                </tr>
+            `;
+                        }
+                        fluitenHTML+=`</tbody></table>`;
+                        fluiten_div.innerHTML = fluitenHTML;
+                        resize_parent(document.getElementById('teams_buttons_za'));
+                    })
+                );
+        }
+		
+        // Programma
+        constructProgramma = () => {
+            const programma_div = document.querySelector('[id="team_programma"');
+            fetch(`https://data.sportlink.com/programma?client_id=3ORggLNhOq&spelsoort=za&aantaldagen=200&teamcode=${kz_teamcode}`)
+                .then(res => res.json()
+                    .then(programmasarray => {
+                        programmaHTML=`<table class="kztabel"><thead><th colspan="2">Datum</th><th/><th>Wedstrijd</th><th/></thead><tbody>`
+                        for (programma of programmasarray) {
+                            programmaHTML += `
+                            <tr>
+                <td>${programma.datum}</td>
+                <td>${programma.aanvangstijd}</td>
+                <td><img src= "${programma.thuisteamlogo}"width="30" height="30"></td>
+                <td>${programma.thuisteam+" -  "+programma.uitteam}</td>
+                <td><img src= "${programma.uitteamlogo}"width="30" height="30"></td>
+                </tr>
+            `;
+                        }
+                        programmaHTML+=`</tbody></table>`;
+                        programma_div.innerHTML = programmaHTML;
+                        resize_parent(document.getElementById('teams_buttons_za'));
+                    })
+                );
+        }
+
+
+        // Team indeling
+        constructTeamIndeling = () => {
+            const indeling_spelers_div = document.querySelector('[id="team_indeling_spelers"');
+            fetch(`https://data.sportlink.com/team-indeling?client_id=3ORggLNhOq&lokaleteamcode=-1&teampersoonrol=SPELER&teamcode=${kz_teamcode}`)
+                .then(res => res.json()
+                    .then(indeling_spelerssarray => {
+                        indeling_spelersHTML=`<table class="kztabel"><thead><th>Naam</th></thead><tbody>`
+                        for (indeling_spelers of indeling_spelerssarray) {
+                            indeling_spelersHTML += `<tr><td>${indeling_spelers.naam}</td></tr>`;
+                        }
+                        indeling_spelersHTML+=`</tbody></table>`;
+                        indeling_spelers_div.innerHTML = indeling_spelersHTML;
+                        resize_parent(document.getElementById('teams_buttons_za'));
+                    })
+                );
+
+        }
+
+        // Staf
+        constructTeamIndelingNietspelers = () => {
+            const indeling_nietspelers_div = document.querySelector('[id="team_indeling_nietspelers"');
+            fetch(`https://data.sportlink.com/team-indeling?client_id=3ORggLNhOq&lokaleteamcode=-1&teampersoonrol=NIET-SPELER&teamcode=${kz_teamcode}`)
+                .then(res => res.json()
+                    .then(indeling_nietspelerssarray => {
+                        indeling_nietspelersHTML=`<table class="kztabel"><thead><th>Naam</th></thead><tbody>`
+                        for (indeling_nietspelers of indeling_nietspelerssarray) {
+                            indeling_nietspelersHTML += `<tr><td>${indeling_nietspelers.naam}</td></tr>`;
+                        }
+                        indeling_nietspelersHTML+=`</tbody></table>`;
+                        indeling_nietspelers_div.innerHTML = indeling_nietspelersHTML;
+                        resize_parent(document.getElementById('teams_buttons_za'));
+                    })
+                );
+        }
+
+        // Uitslagen
+        constructUitslagen = () => {
+            const uitslagen_div = document.querySelector('[id="team_uitslagen"');
+            fetch(`https://data.sportlink.com/uitslagen?client_id=3ORggLNhOq&lokaleteamcode=-1&thuis=ja&uit=ja&weekoffset=-14&aantaldagen=365&teamcode=${kz_teamcode}`)
+                .then(res => res.json()
+                    .then(uitslagensarray => {
+                        uitslagenHTML=`<table class="kztabel"><tbody>`
+                        for (uitslagen of uitslagensarray) {
+                            uitslagenHTML += `
+                            <tr>
+                <td>${uitslagen.datumopgemaakt}</td>
+                <td><img src= "${uitslagen.thuisteamlogo}"width="30" height="30"></td>
+                <td>${uitslagen.wedstrijd}</td>
+                <td><img src= "${uitslagen.thuisteamlogo}"width="30" height="30"></td>
+                <td>${uitslagen.uitslag}</td>
+                </tr>
+            `;
+                        }
+                        uitslagenHTML+=`</tbody></table>`;
+                        uitslagen_div.innerHTML = uitslagenHTML;
+                        resize_parent(document.getElementById('teams_buttons_za'));
+                    })
+                );
+        }
+
+
+        // Poulestanden
+        constructPoulestanden = () => {
+            const poulestand_div = document.querySelector('[id="team_poulestand"');
+            fetch(`https://data.sportlink.com/poulestand?client_id=3ORggLNhOq&poulecode=${window.kz_team.poulecode}`)
+                .then(res => res.json()
+                    .then(poulestandsarray => {
+                        poulestandHTML=`<table class="kztabel"><thead><th>Positie</th><th>Team</th><th>GS</th><th>GW</th><th>GL</th><th>VL</th><th>V</th><th>T</th><th>Doelsaldo</th><th>PT</th></thead><tbody>`
+                        for (poulestand of poulestandsarray) {
+                            poulestandHTML += `<tr>
+                    <td>${poulestand.positie}</td>
+                    <td><img src= "${poulestand.clublogo}"width="30" height="30"></td>
+                    <td>${poulestand.gespeeldewedstrijden}</td>
+                    <td>${poulestand.gewonnen}</td>
+                    <td>${poulestand.gelijk}</td>
+                    <td>${poulestand.verloren}</td>
+                    <td>${poulestand.doelpuntenvoor}</td>
+                    <td>${poulestand.doelpuntentegen}</td>
+                    <td>${poulestand.doelsaldo}</td>
+                    <td>${poulestand.punten}</td>
+                </tr>`;
+                        }
+                        poulestandHTML+=`</tbody></table>`;
+                        poulestand_div.innerHTML = poulestandHTML;
+                        resize_parent(document.getElementById('teams_buttons_za'));
+                    })
+                );
+        }
+
+        setTimeout(constructButtons(), 10);
+    </script>
